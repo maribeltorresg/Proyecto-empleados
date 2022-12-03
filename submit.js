@@ -6,14 +6,14 @@ $(document).ready(function () {
   const $cargo = $("#cargo");
 
   function validarName() {
-    const nameOk = /^[a-z]{2,14}$/.test($first_name.val());
+    const nameOk = /^[a-zA-Z]{2,14}$/.test($first_name.val());
     $first_name.removeClass("is-invalid");
     $first_name.addClass(nameOk ? "is-valid" : "is-invalid");
     return nameOk;
   }
 
   function validarLastname() {
-    const lastnameOk = /^[a-z]{2,14}$/.test($last_name.val());
+    const lastnameOk = /^[a-zA-Z]{2,14}$/.test($last_name.val());
     $last_name.removeClass("is-invalid");
     $last_name.addClass(lastnameOk ? "is-valid" : "is-invalid");
     return lastnameOk;

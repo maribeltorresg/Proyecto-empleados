@@ -1,5 +1,13 @@
 const users = [];
 
+let sueldos = {
+  jefe: 5000,
+  analista: 4000,
+  programador: 3000,
+  soporte: 2000,
+  asistente: 1500,
+};
+
 // Creamos un objeto donde guardaré el estado que más adelante
 // iré actualizando
 const registroFiltro = {
@@ -13,87 +21,78 @@ const registroOrden = {
 };
 
 class Empleado {
-  constructor(codigo, nombre, apellido, correo, cargo) {
-    // Atributos
-    this.codigo = codigo;
+  constructor(nombre, apellido, correo, cargo) {
+    this.codigo = this.generarCodigoAleatorio();
     this.nombre = nombre;
     this.apellido = apellido;
     this.correo = correo;
     this.cargo = cargo;
+    this.sueldo_bruto = this.sueldoBruto();
+    this.sueldo_neto = this.sueldoNeto();
+    this.created_at = new Date().toISOString();
+    this.updated_at = "";
   }
-  // Métodos
+
+  generarCodigoAleatorio() {
+    return Math.random().toString(36).substr(2, 5);
+  }
+
   sueldoBruto() {
-    switch (this.cargo) {
-      case this.cargo == "Jefe":
-        console.log("Te tocaría: 5000");
-        break;
-
-      case this.cargo == "Analista":
-        console.log("Te tocaría: 4000");
-        break;
-
-      case this.cargo == "Programador":
-        console.log("Te tocaría: 5000");
-        break;
-
-      case this.cargo == "Soporte":
-        console.log("Te tocaría: 2000");
-        break;
-
-      case this.cargo == "Asistente":
-        console.log("Te tocaría: 1500");
-        break;
-    }
+    return sueldos[this.cargo];
   }
-  sueldoNeto() {}
+
+  sueldoNeto() {
+    return this.sueldoBruto() * 0.8;
+  }
 }
 
-// const empleado1 = new Empleado(3, "Anfgel", "Torres", "m@g.com", "jefe");
-// console.log(empleado1);
-// console.log(empleado1.sueldoBruto());
+// Retorna "true" si no existe otro
+// usuario con el mismo correo.
+function verificarCorreo(correo) {
+  const userIndex = users.findIndex((user) => {
+    return user.correo === correo;
+  });
+
+  if (userIndex === -1) {
+    return true;
+  }
+}
 
 // Crear
 function create(nombre, apellido, correo, cargo) {
-  // created_at: new Date().toISOString(),
+  if (!verificarCorreo(correo)) {
+    alert("Ya existe un usuario con este correo: " + correo);
+    return;
+  }
 
-  const empleado = new Empleado(
-    Math.random().toString(36).substr(2, 5),
-    nombre,
-    apellido,
-    correo,
-    cargo
-  );
-
+  const empleado = new Empleado(nombre, apellido, correo, cargo);
   users.push(empleado);
 }
 
 // Actualizar
-function update() {
-  const idAModificar = prompt("Ingrese el ID del registro a modificar");
-  if (idAModificar === "") {
+function update(codigo, nombre, apellido, correo, cargo) {
+  if (codigo === "") {
     return;
   }
 
-  const index = users.findIndex((element) => {
-    return element.id === idAModificar;
+  if (!verificarCorreo(correo)) {
+    alert("Ya existe un usuario con este correo: " + correo);
+    return;
+  }
+
+  const empleadoIndex = users.findIndex((empleado) => {
+    return empleado.codigo === codigo;
   });
-  if (index === -1) {
-    alert("No existe");
+  if (empleadoIndex === -1) {
+    alert(`El empleado con el id: ${codigo} no existe!`);
     return;
   }
 
-  const info = prompt(
-    "Ingrese la informacion del usuario (nombre, apellido, edad, profesion)",
-    "Luis, Lopez, 40, Arquitecto"
-  );
-
-  let arrayInfo = info.replace(/ /g, "").split(",");
-
-  users[index].nombre = arrayInfo[0];
-  users[index].apellido = arrayInfo[1];
-  users[index].edad = arrayInfo[2];
-  users[index].profesion = arrayInfo[3];
-  users[index].updated_date = new Date().toISOString();
+  users[empleadoIndex].nombre = nombre;
+  users[empleadoIndex].apellido = apellido;
+  users[empleadoIndex].correo = correo;
+  users[empleadoIndex].cargo = cargo;
+  users[empleadoIndex].updated_at = new Date().toISOString();
 }
 
 // Eliminar
@@ -187,10 +186,54 @@ function filtrarUsuarios(anioAfiltrar, mesAFiltrar) {
   return usuariosFiltrados;
 }
 
+const $perfilCodigo = $("#perfil-codigo");
+const $perfilNombre = $("#perfil-nombre");
+const $perfilApellido = $("#perfil-apellido");
+const $perfilCorreo = $("#perfil-correo");
+const $perfilCargo = $("#perfil-cargo");
+const $perfilEditar = $("#perfil-editar");
+const $perfilGuardar = $("#perfil-guardar");
+
+function perfilLlenarDatos(empleado) {
+  $perfilCodigo.val(empleado.codigo);
+  $perfilNombre.val(empleado.nombre);
+  $perfilApellido.val(empleado.apellido);
+  $perfilCorreo.val(empleado.correo);
+  $perfilCargo.val(empleado.cargo);
+  perfilDeshabilitar();
+}
+function perfilHabilitar() {
+  $("#usuario input, #usuario select").removeAttr("disabled");
+}
+function perfilDeshabilitar() {
+  $("#usuario input, #usuario select").attr("disabled", "disabled");
+}
+perfilDeshabilitar();
+
+$perfilEditar.on("click", () => {
+  perfilHabilitar();
+});
+
+$perfilGuardar.on("click", () => {
+  update(
+    $perfilCodigo.val(),
+    $perfilNombre.val(),
+    $perfilApellido.val(),
+    $perfilCorreo.val(),
+    $perfilCargo.val()
+  );
+  perfilDeshabilitar();
+  renderizar();
+});
+
 // Esta función es quien va a ordenar y dibujar la tabla
 function renderizar() {
   // Lo que me retorne la función filtrarUsuarios() le asigno a data
   let data = filtrarUsuarios(registroFiltro.year, registroFiltro.month);
+
+  if (!data.length) {
+    return;
+  }
 
   // Ordenamos
   data.sort((a, b) => {
@@ -215,13 +258,9 @@ function renderizar() {
 
   for (const property in data[0]) {
     const th = document.createElement("th");
-    th.textContent = property.toUpperCase();
-    th.style.textAlign = "center";
-    th.style.color = "#61B1D5";
+    th.textContent = property.toUpperCase().replace("_", " ");
 
     th.addEventListener("click", () => {
-      console.log(property);
-
       // Llamamos a setRegistroOrden(...) y le pasamos como parámetro la cabecera que se
       // dió click
       setRegistroOrden(property);
@@ -230,20 +269,39 @@ function renderizar() {
     headTr.appendChild(th);
   }
 
+  // Cabecera de la columna "Data Empleado"
+  const thEditar = document.createElement("th");
+  thEditar.textContent = "Data Empleado".toUpperCase();
+  headTr.appendChild(thEditar);
+
   thead.appendChild(headTr);
   table.appendChild(thead);
 
   // Cuerpo de la tabla
   const tbody = document.createElement("tbody");
 
+  // Recorremos todos los empleados para
+  // crearles su respectiva fila.
   for (let i = 0; i < data.length; i++) {
+    const empleado = data[i];
     const tr = document.createElement("tr");
 
-    for (const property in data[i]) {
+    for (const property in empleado) {
       const td = document.createElement("td");
-      td.textContent = data[i][property];
+      td.textContent = empleado[property];
       tr.appendChild(td);
     }
+
+    // Agregamos el link "Perfil"
+    const tdLinkEditar = document.createElement("td");
+    const linkEditar = document.createElement("a");
+    linkEditar.textContent = "Perfil";
+    linkEditar.href = "#usuario";
+    linkEditar.addEventListener("click", () => {
+      perfilLlenarDatos(empleado);
+    });
+    tdLinkEditar.appendChild(linkEditar);
+    tr.appendChild(tdLinkEditar);
 
     tbody.appendChild(tr);
   }
@@ -256,6 +314,7 @@ const createBtn = document.createElement("button");
 const updateBtn = document.createElement("button");
 const deleteBtn = document.createElement("button");
 const table = document.createElement("table");
+table.textContent = "Aún no existen registros de empleados";
 
 // year select
 const selectYear = document.createElement("select");
@@ -314,14 +373,17 @@ deleteBtn.textContent = "Borrar registro";
 deleteBtn.style.backgroundColor = "#E93C46";
 
 // Seleccionamos root
-const root = document.getElementById("root");
+const root = document.getElementById("tabla-root");
 
 // Mostrar en pantalla
-root.appendChild(selectYear);
-root.appendChild(selectMonth);
+// // Filtros
+// root.appendChild(selectYear);
+// root.appendChild(selectMonth);
+// // Botones
 // root.appendChild(createBtn);
 // root.appendChild(updateBtn);
-root.appendChild(deleteBtn);
+// root.appendChild(deleteBtn);
+// // Tabla
 root.appendChild(table);
 
 selectYear.addEventListener("change", (e) => {
