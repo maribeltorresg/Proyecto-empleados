@@ -20,6 +20,7 @@ const registroOrden = {
   asc: true,
 };
 
+// CLASE
 class Empleado {
   constructor(nombre, apellido, correo, cargo) {
     this.codigo = this.generarCodigoAleatorio();
@@ -33,14 +34,17 @@ class Empleado {
     this.updated_at = "";
   }
 
+  // Codigo aleatorio
   generarCodigoAleatorio() {
     return Math.random().toString(36).substr(2, 5);
   }
 
+  // Sueldo bruto
   sueldoBruto() {
     return sueldos[this.cargo];
   }
 
+  // Sueldo neto
   sueldoNeto() {
     return this.sueldoBruto() * 0.8;
   }
@@ -65,7 +69,9 @@ function create(nombre, apellido, correo, cargo) {
     return;
   }
 
+  // Creamos una instancia de la clase Empleado
   const empleado = new Empleado(nombre, apellido, correo, cargo);
+  // Agregamos esa instancia al array users
   users.push(empleado);
 }
 
@@ -83,11 +89,13 @@ function update(codigo, nombre, apellido, correo, cargo) {
   const empleadoIndex = users.findIndex((empleado) => {
     return empleado.codigo === codigo;
   });
+
   if (empleadoIndex === -1) {
     alert(`El empleado con el id: ${codigo} no existe!`);
     return;
   }
 
+  // Al array users en el indice le asignamos nuevos valores
   users[empleadoIndex].nombre = nombre;
   users[empleadoIndex].apellido = apellido;
   users[empleadoIndex].correo = correo;
@@ -96,29 +104,29 @@ function update(codigo, nombre, apellido, correo, cargo) {
 }
 
 // Eliminar
-function remove() {
-  const idABorrar = prompt("Ingrese el ID del registro a borrar");
-  // Validar que no este en blanco
-  if (idABorrar === "") {
-    return;
-  }
+// function remove() {
+//   const idABorrar = prompt("Ingrese el ID del registro a borrar");
+//   // Validar que no este en blanco
+//   if (idABorrar === "") {
+//     return;
+//   }
 
-  // Nota: findIndex retorna -1 si no encuentra
-  const index = users.findIndex((element) => {
-    return element.id === idABorrar;
-  });
-  if (index === -1) {
-    alert("No existe");
-    return;
-  }
+//   // Nota: findIndex retorna -1 si no encuentra
+//   const index = users.findIndex((element) => {
+//     return element.id === idABorrar;
+//   });
+//   if (index === -1) {
+//     alert("No existe");
+//     return;
+//   }
 
-  const respuesta = prompt("Esta usted seguro? (Si/No)", "Si");
-  if (respuesta !== "Si") {
-    return;
-  }
-  // Le aplicamos el método splice a users
-  users.splice(index, 1);
-}
+//   const respuesta = prompt("Esta usted seguro? (Si/No)", "Si");
+//   if (respuesta !== "Si") {
+//     return;
+//   }
+//   // Le aplicamos el método splice a users
+//   users.splice(index, 1);
+// }
 
 // Setear el obj registroFiltro
 function setFiltroYear(year) {
@@ -186,6 +194,7 @@ function filtrarUsuarios(anioAfiltrar, mesAFiltrar) {
   return usuariosFiltrados;
 }
 
+// Seleccionamos los campos del perfil del empleado
 const $perfilCodigo = $("#perfil-codigo");
 const $perfilNombre = $("#perfil-nombre");
 const $perfilApellido = $("#perfil-apellido");
@@ -202,12 +211,15 @@ function perfilLlenarDatos(empleado) {
   $perfilCargo.val(empleado.cargo);
   perfilDeshabilitar();
 }
+
 function perfilHabilitar() {
   $("#usuario input, #usuario select").removeAttr("disabled");
 }
+
 function perfilDeshabilitar() {
   $("#usuario input, #usuario select").attr("disabled", "disabled");
 }
+
 perfilDeshabilitar();
 
 $perfilEditar.on("click", () => {
@@ -241,9 +253,9 @@ function renderizar() {
       // No hará nada
       return 0;
     }
-    if (registroOrden.column === "edad") {
-      return registroOrden.asc ? a.edad - b.edad : b.edad - a.edad;
-    }
+    // if (registroOrden.column === "edad") {
+    //   return registroOrden.asc ? a.edad - b.edad : b.edad - a.edad;
+    // }
 
     return registroOrden.asc
       ? a[registroOrden.column].localeCompare(b[registroOrden.column])
@@ -258,7 +270,30 @@ function renderizar() {
 
   for (const property in data[0]) {
     const th = document.createElement("th");
-    th.textContent = property.toUpperCase().replace("_", " ");
+
+    if (registroOrden.column === property) {
+      const divth = document.createElement("div");
+
+      if (registroOrden.asc === true) {
+        divth.innerHTML = `
+          ${property.toUpperCase().replace("_", " ")}
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+          </svg>
+        `;
+      } else {
+        divth.innerHTML = `
+          ${property.toUpperCase().replace("_", " ")}
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+          </svg>
+        `;
+      }
+
+      th.append(divth);
+    } else {
+      th.textContent = property.toUpperCase().replace("_", " ");
+    }
 
     th.addEventListener("click", () => {
       // Llamamos a setRegistroOrden(...) y le pasamos como parámetro la cabecera que se
@@ -308,6 +343,8 @@ function renderizar() {
 
   table.appendChild(tbody);
 }
+
+// -------------------------------------------------------------------------------------
 
 // Crear elementos que se van a mostrar en la interfaz
 const createBtn = document.createElement("button");
@@ -402,13 +439,14 @@ createBtn.addEventListener("click", () => {
   create();
   renderizar();
 });
-updateBtn.addEventListener("click", () => {
-  update();
-  renderizar();
-});
-deleteBtn.addEventListener("click", () => {
-  remove();
-  renderizar();
-});
+
+// updateBtn.addEventListener("click", () => {
+//   update();
+//   renderizar();
+// });
+// deleteBtn.addEventListener("click", () => {
+//   remove();
+//   renderizar();
+// });
 
 renderizar();

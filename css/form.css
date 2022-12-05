@@ -2,3 +2,15 @@
   max-width: 750px;
   margin: auto;
 }
+
+h2,
+h4 {
+  color: #3e3542;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.btn {
+  background-color: #3e3542 !important;
+  color: white;
+  text-transform: uppercase;
+}

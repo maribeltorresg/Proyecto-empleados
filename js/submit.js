@@ -6,7 +6,7 @@ $(document).ready(function () {
   const $cargo = $("#cargo");
 
   function validarName() {
-    const nameOk = /^[a-zA-Z]{2,14}$/.test($first_name.val());
+    const nameOk = /^[a-zA-Z\s]{2,14}$/.test($first_name.val());
     $first_name.removeClass("is-invalid");
     $first_name.addClass(nameOk ? "is-valid" : "is-invalid");
     return nameOk;

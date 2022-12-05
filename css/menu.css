@@ -5,6 +5,11 @@
   padding: 1rem;
 }
 
+.navbar-brand,
+.navbar .nav-item .nav-link {
+  color: white !important;
+}
+
 .logo h2 {
   font-weight: 700;
 }
@@ -45,7 +50,7 @@
   }
 }
 .contenedor-navegacion {
-  background: #1204d1;
+  /* background: #794242; */
   position: relative;
   z-index: 5;
 }
@@ -90,7 +95,7 @@
   top: 0;
   right: 0;
   position: absolute;
-  background-color: #1204d1;
+  /* background-color: #794242; */
   bottom: 1px;
   height: 100vh;
   width: 30rem;

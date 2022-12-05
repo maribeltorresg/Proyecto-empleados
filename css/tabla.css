@@ -1,8 +1,14 @@
 table,
 th,
 td {
-  border: 2px solid #444;
+  border: 2px solid white;
   border-collapse: collapse;
+}
+
+table thead th div {
+  align-items: center;
+  display: flex;
+  justify-content: space-around;
 }
 
 table {
@@ -12,8 +18,13 @@ table {
 }
 
 tbody td:first-child {
-  color: #9984fc;
+  /* color: #9984fc; */
   font-weight: bold;
+}
+
+thead {
+  background-color: #3e3542;
+  border-radius: 4px;
 }
 
 th,
@@ -22,5 +33,9 @@ td {
 }
 
 th {
-  color: #61b1d5;
+  color: white;
+}
+
+tbody {
+  background-color: #cac4cd;
 }
